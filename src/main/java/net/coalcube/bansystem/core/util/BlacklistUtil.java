@@ -29,25 +29,32 @@ public class BlacklistUtil {
         message = message.replaceAll("5", "S");
         message = message.replaceAll("8", "B");
         String[] trimmed = message.split(" ");
+        String lowerMessage = message.toLowerCase();
 
         for (String word : blacklist.getStringList("Words")) {
-            if (message.contains(word) ||
-                    message.equalsIgnoreCase(word) ||
-                    message.toUpperCase().equals(word) ||
-                    message.toLowerCase().equals(word)) {
-                for(String whitelistRow : whitelist) {
-                    if(message.contains(whitelistRow) || message.equalsIgnoreCase(whitelistRow)) {
-                        return false;
-                    } else
-                        return true;
-                }
+            String lowerWord = word.toLowerCase();
+            boolean wordFound = lowerMessage.contains(lowerWord);
 
+            if (!wordFound) {
+                for (String piece : trimmed) {
+                    if (piece.equalsIgnoreCase(word)) {
+                        wordFound = true;
+                        break;
+                    }
+                }
             }
 
-
-            for(String pice : trimmed) {
-                if(pice.equalsIgnoreCase(word) && !whitelist.contains(word))
+            if (wordFound) {
+                boolean whitelisted = false;
+                for (String whitelistRow : whitelist) {
+                    if (lowerMessage.contains(whitelistRow.toLowerCase())) {
+                        whitelisted = true;
+                        break;
+                    }
+                }
+                if (!whitelisted) {
                     return true;
+                }
             }
         }
         return false;
@@ -74,28 +81,34 @@ public class BlacklistUtil {
         message = message.replaceAll("Point", ".");
 
         String[] trimmed = message.split(" ");
+        String lowerMessage = message.toLowerCase();
+        String lowerRawMessage = rawMessage.toLowerCase();
 
-        for(String ad : blacklist.getStringList("Ads")) {
-            if(message.contains(ad)
-                    || message.equalsIgnoreCase(ad)
-                    || message.toUpperCase().equals(ad)
-                    || message.toLowerCase().equals(ad)
-                    || rawMessage.contains(ad)
-                    || rawMessage.equalsIgnoreCase(ad)
-                    || rawMessage.toUpperCase().equals(ad)
-                    || rawMessage.toLowerCase().equals(ad))
-                for(String whitelistRow : whitelist) {
-                    if(message.contains(whitelistRow) || message.equalsIgnoreCase(whitelistRow)) {
-                        return false;
-                    } else
-                        return true;
+        for (String ad : blacklist.getStringList("Ads")) {
+            String lowerAd = ad.toLowerCase();
+            boolean adFound = lowerMessage.contains(lowerAd) || lowerRawMessage.contains(lowerAd);
+
+            if (!adFound) {
+                for (String word : trimmed) {
+                    if (word.equalsIgnoreCase(ad)) {
+                        adFound = true;
+                        break;
+                    }
                 }
-
-            for(String word : trimmed) {
-                if(word.equalsIgnoreCase(ad) && !whitelist.contains(word))
-                    return true;
             }
 
+            if (adFound) {
+                boolean whitelisted = false;
+                for (String whitelistRow : whitelist) {
+                    if (lowerMessage.contains(whitelistRow.toLowerCase())) {
+                        whitelisted = true;
+                        break;
+                    }
+                }
+                if (!whitelisted) {
+                    return true;
+                }
+            }
         }
         return false;
     }
