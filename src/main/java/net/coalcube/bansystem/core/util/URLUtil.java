@@ -37,7 +37,7 @@ public class URLUtil {
     }
 
     public boolean isVPN(String ip) throws IOException {
-        if (!ip.equals("127.0.0.1") || !ip.equals(config.getString("VPN.serverIP"))) {
+        if (!ip.equals("127.0.0.1") && !ip.equals(config.getString("VPN.serverIP"))) {
             JSONObject jsonObject;
 
             if(config.getString("VPN.apikey").isEmpty()) {
